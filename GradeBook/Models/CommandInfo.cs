@@ -1,4 +1,4 @@
-﻿namespace GradeBook
+﻿namespace GradeBook.Models
 {
     public class CommandInfo
     {

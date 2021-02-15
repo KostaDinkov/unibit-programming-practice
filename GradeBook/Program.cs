@@ -1,4 +1,6 @@
-﻿namespace GradeBook
+﻿using GradeBook.Models;
+
+namespace GradeBook
 {
     class Program
     {

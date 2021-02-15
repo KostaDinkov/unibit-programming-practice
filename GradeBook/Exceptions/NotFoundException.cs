@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GradeBook
+namespace GradeBook.Exceptions
 {
     public class NotFoundException : Exception
     {

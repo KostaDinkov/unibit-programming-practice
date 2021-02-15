@@ -1,6 +1,8 @@
 ﻿using System;
+using GradeBook.Exceptions;
+using GradeBook.Utils;
 
-namespace GradeBook
+namespace GradeBook.Models
 {
     public class ConsoleTerminal : ITerminal
     {
@@ -37,11 +39,11 @@ namespace GradeBook
                         break;
 
                     case "add-grade":
-                        Validate.AddGrade(commandParts, school);
+                        Validate.AddGrade(commandParts, this.school);
                         break;
 
                     case "get-grades":
-                        string result = Validate.GetGrades(commandParts, school);
+                        string result = Validate.GetGrades(commandParts, this.school);
                         this.Log(result);
                         break;
 
@@ -65,7 +67,7 @@ namespace GradeBook
             }
             catch (CommandFormatException e)
             {
-                Log(e.Message);
+                this.Log(e.Message);
             }
         }
 

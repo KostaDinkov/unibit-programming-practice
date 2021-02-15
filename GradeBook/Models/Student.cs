@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GradeBook
+namespace GradeBook.Models
 {
     public class Student
 

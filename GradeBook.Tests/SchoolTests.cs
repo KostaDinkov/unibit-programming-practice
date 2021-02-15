@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using GradeBook.Models;
 using Xunit;
 
 namespace GradeBook.Tests

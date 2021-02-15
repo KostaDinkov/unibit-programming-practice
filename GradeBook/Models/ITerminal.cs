@@ -1,5 +1,5 @@
 ﻿
-namespace GradeBook
+namespace GradeBook.Models
 {
     interface ITerminal
     {

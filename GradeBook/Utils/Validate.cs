@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using GradeBook.Exceptions;
+using GradeBook.Models;
 
-namespace GradeBook
+namespace GradeBook.Utils
 {
     public class Validate
     {
