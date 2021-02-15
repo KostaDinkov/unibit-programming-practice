@@ -1,0 +1,11 @@
+﻿add-course: 1, Cooking, 20, 30, Nanny Ogg
+add-course: 2, Thievery, 30, 30, Master Thief
+add-course: 3, Fighting, 10, 10, Fight Master
+add-course: 2, Horse Riding, 15, 15, Horse Rider
+add-student: Angua
+add-grade: Angua, Cooking, 3
+add-grade: Angua, Thievery, 5
+add-grade: Angua, Fighting, 4
+add-grade: Angua, Horse Riding, 6
+get-semester-stats: Angua
+get-grades: Angua

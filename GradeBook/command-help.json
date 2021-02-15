@@ -1,0 +1,33 @@
+[
+  {
+    "Name": "add-student",
+    "Format": "add-student: {fullName}",
+    "Description": "Adds a new student to the school",
+    "Example": "add-student: Sam Vimes"
+  },
+  {
+    "Name": "add-grade",
+    "Format": "add-grade: {fullName}, {course}, {grade}",
+    "Description": "Adds a new course grade for the given student",
+    "Example": "add-grade: Sam Vimes, Law, 6"
+  },
+  {
+    "Name": "add-course",
+    "Format": "add-course: {semester No}, {name}, {lectures count}, {exercises count}, {teacher name}",
+    "Description": "Adds a new course to the school for the given semester, with the count of the lectures and exercises, and the teacher's name.",
+    "Example": "add-course: 1, Law, 25, 30, Lord Vetinari"
+  },
+  {
+    "Name": "get-grades",
+    "Format": "get-grades: {fullName}",
+    "Description": "Gets the grades for the specified student",
+    "Example": "get-grades: Sam Vimes"
+  },
+  {
+    "Name": "get-semester-stats",
+    "Format": "get-semester-stats: {fullName}",
+    "Description": "Gets the semester statistics for the given student",
+    "Example": "get-semester-stats: Sam Vimes"
+  }
+
+]
