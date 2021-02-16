@@ -7,10 +7,9 @@ namespace GradeBook.Models
         public void ReadCommand();
 
         public void Log(string message);
+        public void Start();
 
-        
 
-        
 
     }
 }

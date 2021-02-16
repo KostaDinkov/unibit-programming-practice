@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace GradeBook.Models
 {
@@ -29,6 +31,11 @@ namespace GradeBook.Models
             {
                 this.CoursesGrades.Add(courseName,grade);
             }
+        }
+
+        public double GetAverageGrade()
+        {
+            return this.CoursesGrades.Average(k => k.Value);
         }
     }
 }
