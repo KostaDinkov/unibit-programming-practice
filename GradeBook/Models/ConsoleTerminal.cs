@@ -51,8 +51,8 @@ namespace GradeBook.Models
                         break;
 
                     case "add-grades-bulk":
-                        var data = Console.ReadLine();
-                        var studentGrades = this.school.Validator.ValidateAddGradesBulk(commandLine[1].Trim(), data);
+                        var data = Console.ReadLine().Split(";");
+                        var studentGrades = this.school.Validator.ValidateAddGradesBulk(command, commandLine, data);
                         this.school.AddGradesBulk(studentGrades.Item1.FullName, studentGrades.Item2);
                         break;
 

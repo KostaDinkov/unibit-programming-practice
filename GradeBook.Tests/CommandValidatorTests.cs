@@ -62,14 +62,78 @@ namespace GradeBook.Tests
         }
 
         [Theory]
-        [InlineData("add-student", new[]{"add-student"})]
-        [InlineData("add-student", new[] { "add-student","" })]
-        [InlineData("add-student", new[] { "add-student","studentName, Another name" })]
-        [InlineData("add-student", new[] { "add-student","a very long string that is not a name" })]
-
+        [InlineData("add-student", new[] {"add-student"})]
+        [InlineData("add-student", new[] {"add-student", ""})]
+        [InlineData("add-student", new[] {"add-student", "studentName, Another name"})]
         public void ValidateAddStudent_IncorrectInput_ShouldTrhow(string command, string[] commandLine)
         {
             Assert.Throws<CommandFormatException>(() => this.school.Validator.ValidateAddStudent(command, commandLine));
+        }
+
+        [Fact]
+        public void ValidateAddStudent_CorrectInput_ShouldReturn()
+        {
+            const string studentName = "Trendafil Akatsiev";
+            const string command = "add-student";
+            var actual = this.school.Validator.ValidateAddStudent(command, new[] {command, studentName});
+
+            var expected = new Student() {FullName = studentName};
+        }
+
+        [Theory]
+        [InlineData("add-grade", new[] {"add-grade", "student, course"})]
+        [InlineData("add-grade", new[] {"add-grade", "student course 5"})]
+        [InlineData("add-grade", new[] {"add-grade"})]
+        [InlineData("add-grade", new[] {"add-grade", ""})]
+        [InlineData("add-grade", new[] {"add-grade", "student, , 5"})]
+        [InlineData("add-grade", new[] {"add-grade", " , , 5"})]
+        [InlineData("add-grade", new[] {"add-grade", " ,course , 5"})]
+        public void ValidateAddGrade_IncorrectInput_ShouldThrow(string command, string[] commandLine)
+        {
+            Assert.Throws<CommandFormatException>(() => this.school.Validator.ValidateAddGrade(command, commandLine));
+        }
+
+        [Fact]
+        public void ValidateAddGrade_CorrectInput_ShouldPass()
+        {
+            var command = "add-grade";
+            var studentName = "Anakin Skywalker";
+            var courseName = "Force Sensitivity";
+            var grade = 6;
+
+            this.school.Validator.ValidateAddGrade(command, new[] {command, $"{studentName}, {courseName}, {grade}"});
+        }
+
+        [Theory]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", ""}, new[] {""})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"}, new[] {""})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"}, new[] {" , , , , ,"})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"},
+            new[] {"1, Guitar mastery, notAnumber, 50, Jimmy Henrix, 6"})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"},
+            new[] {"1, Guitar mastery, 50, notAnumber, Jimmy Henrix, 6"})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"},
+            new[] {"1, Guitar mastery, 50, 50, ,"})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"},
+            new[] {"1, Guitar mastery, 50, 50, Jimmy Hendrix, notANumber"})]
+        [InlineData("add-grades-bulk", new[] {"add-grades-bulk", "Bobby Dylan"},
+            new[] {"1, Guitar mastery, 50, 50, Jimmy Hendrix, 6; 2, Vocal Mastery, 50, notAnumber, Frank Sinatra, 2"})]
+        public void ValidateAddGradesBulk_IncorrectInput_ShouldThrow(string command, string[] commandLine,
+            string[] data)
+        {
+            Assert.Throws<CommandFormatException>(() =>
+                this.school.Validator.ValidateAddGradesBulk(command, commandLine, data));
+        }
+
+        [Fact]
+        public void ValidateAddGradesBulk_CorrectInput_ShouldPass()
+        {
+            var command = "add-grades-bulk";
+            var commandLine = new[] {"add-grades-bulk", "Bobby Dylan"};
+            var courseData = new[]
+                {"1, Guitar mastery, 50, 50, Jimmy Hendrix, 6","2, Vocal Mastery, 50, 50, Frank Sinatra, 2"};
+
+            this.school.Validator.ValidateAddGradesBulk(command, commandLine, courseData);
         }
     }
 }

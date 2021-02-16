@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
+using System.Transactions;
 using GradeBook.Exceptions;
 using GradeBook.Models;
 
@@ -21,7 +24,8 @@ namespace GradeBook.Utils
             if (!this.IsCorrectLen(commandLine, 2)) this.ThrowFormatError(command);
             
             var studentName = commandLine[1].Trim();
-            if (string.IsNullOrWhiteSpace(studentName)) this.ThrowFormatError(command);
+            if(!Regex.IsMatch(studentName, "^[a-zA-Z ]*$") ||
+             string.IsNullOrWhiteSpace(studentName)) this.ThrowFormatError(command);
             
             var student = new Student {FullName = studentName};
             return student;
@@ -58,12 +62,27 @@ namespace GradeBook.Utils
 
         public void ValidateAddGrade(string command, string[] parameters)
         {
-            if (this.IsCorrectLen(parameters,3)) this.ThrowFormatError(command);
-            
 
-            var studentName = parameters[0].Trim();
-            var courseName = parameters[1].Trim();
-            var grade = double.Parse(parameters[2], CultureInfo.InvariantCulture);
+            if(!IsCorrectLen(parameters, 2)) ThrowFormatError(command);
+
+            var dataParts = parameters[1].Split(",");
+            if (!IsCorrectLen(dataParts, 3)) ThrowFormatError(command);
+            
+            var studentName = dataParts[0].Trim();
+            if(string.IsNullOrWhiteSpace(studentName)) ThrowFormatError(command);
+            
+            var courseName = dataParts[1].Trim();
+            if(string.IsNullOrWhiteSpace(courseName)) ThrowFormatError(command);
+
+            double grade = 0;
+            try
+            {
+                grade = double.Parse(dataParts[2], CultureInfo.InvariantCulture);
+            }
+            catch (FormatException)
+            {
+                ThrowFormatError(command);
+            }
 
             var student = this.school.Students.FirstOrDefault(s => s.FullName == studentName) ??
                           new Student {FullName = studentName};
@@ -87,31 +106,29 @@ namespace GradeBook.Utils
             return this.school.GetGradesString(input);
         }
 
-        public (Student, Dictionary<string, double>) ValidateAddGradesBulk(string name, string data)
+        public (Student, Dictionary<string, double>) ValidateAddGradesBulk(string command, string[] commandLine, string[] data)
         {
+            if(!IsCorrectLen(commandLine,2)) ThrowFormatError(command);
+            
             Student student;
+            var studentName = commandLine[1].Trim();
             try
             {
-                student = this.ValidateStudent(name);
+                student = this.ValidateStudent(studentName);
             }
             catch (NotFoundException e)
             {
-                student = new Student {FullName = name};
+                student = new Student {FullName = studentName};
                 this.school.AddStudent(student);
             }
-
-            var coursesGrades = data.Split(";");
+            
             var result = new Dictionary<string, double>();
 
-            foreach (var courseGrade in coursesGrades)
+            foreach (var courseGrade in data)
             {
                 var parameters = courseGrade.Split(",").Select(s => s.Trim()).ToArray();
-                if (parameters.Length != 6)
-                {
-                    throw new CommandFormatException("The command is not in the specified format. " +
-                                                     "Each course data entry must be in the form {semester}, {courseName}, {lecturesHours}, {exercisesHours}, {teacherName}, {grade}");
-                }
-
+                if(!IsCorrectLen(parameters,6)) ThrowFormatError(command);
+                
                 try
                 {
                     var semester = int.Parse(parameters[0]);
@@ -120,6 +137,8 @@ namespace GradeBook.Utils
                     var exerciseHours = int.Parse(parameters[3]);
                     var teacherName = parameters[4];
                     var grade = double.Parse(parameters[5], CultureInfo.InvariantCulture);
+
+                    if(string.IsNullOrWhiteSpace(courseName) || string.IsNullOrWhiteSpace(teacherName)) ThrowFormatError(command);
 
                     if (this.school.Courses.All(c => c.Name != courseName))
                     {
@@ -134,7 +153,7 @@ namespace GradeBook.Utils
                 }
                 catch (Exception e)
                 {
-                    throw new CommandFormatException("The command is not in the specified format.\n" + e.Message);
+                    ThrowFormatError(command);
                 }
             }
 
