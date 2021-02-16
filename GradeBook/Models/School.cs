@@ -58,7 +58,7 @@ namespace GradeBook.Models
 
             sb.AppendLine($"Total: {this.Courses.Count} courses.");
 
-            return sb.ToString();
+            return sb.ToString().Trim('\r','\n');
         }
 
         public void AddGrade(string name, string courseName, double grade)

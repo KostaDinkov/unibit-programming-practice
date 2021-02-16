@@ -2,10 +2,10 @@
 
 namespace GradeBook
 {
-    class Program
+    public class Program
     {
         public const string CommandInfoFilePath = "command-help.json";
-        static void Main()
+        public static void Main()
         {
             var school = new School("Unibit");
 

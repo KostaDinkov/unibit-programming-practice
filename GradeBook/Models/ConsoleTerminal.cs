@@ -1,12 +1,11 @@
 ﻿using System;
 using GradeBook.Exceptions;
-using GradeBook.Utils;
 
 namespace GradeBook.Models
 {
     public class ConsoleTerminal : ITerminal
     {
-        private School school;
+        private readonly School school;
 
         public ConsoleTerminal(School school)
         {
@@ -18,29 +17,26 @@ namespace GradeBook.Models
 
         public void ReadCommand()
         {
-            Console.Write(">>>");
-            
-
             try
             {
                 var commandLine = Console.ReadLine().Split(":");
-                
+
                 var command = commandLine[0].Trim();
                 string result;
                 switch (command)
                 {
-                    case ("add-student"):
+                    case "add-student":
                         var student = this.school.Validator.ValidateAddStudent(command, commandLine);
                         this.school.AddStudent(student);
                         this.Log($"Student {student.FullName} added to School");
                         break;
 
-                    case ("add-course"):
+                    case "add-course":
                         var course = this.school.Validator.ValidateAddCourse(command, commandLine);
                         this.school.AddCourse(course);
                         this.Log($"Course {course.Name} added to School");
                         break;
-                    
+
                     case "get-courses":
                         result = this.school.GetCoursesString();
                         this.Log(result);
@@ -56,7 +52,6 @@ namespace GradeBook.Models
                         this.school.AddGradesBulk(studentGrades.Item1.FullName, studentGrades.Item2);
                         break;
 
-
                     case "get-grades":
                         result = this.school.Validator.ValidateGetGrades(commandLine[1].Trim());
                         this.Log(result);
@@ -70,17 +65,19 @@ namespace GradeBook.Models
                     case "get-students":
                         this.Log(this.school.GetStudentsString());
                         break;
-                    
+
                     case "h":
                         this.Log(this.school.GetCommandHelp());
                         break;
-                    
+                    case "exit":
+                        this.IsRunning = false;
+                        break;
                     default:
                         this.Log("Command Not Recognized. Please enter a valid command or enter h for help");
                         break;
                 }
             }
-            catch (Exception e) when(e is CommandFormatException || e is NotFoundException)
+            catch (Exception e) when (e is CommandFormatException || e is NotFoundException)
             {
                 this.Log(e.Message);
             }

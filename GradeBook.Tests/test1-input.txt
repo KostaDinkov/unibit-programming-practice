@@ -1,0 +1,5 @@
+﻿add-student: Dinkov
+get-students:
+add-course: 1, Algebra, 50, 50, Leibnitz
+get-courses:
+exit

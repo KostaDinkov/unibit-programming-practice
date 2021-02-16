@@ -23,4 +23,13 @@
     <ProjectReference Include="..\GradeBook\GradeBook.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="test1-input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="test1-expected.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
