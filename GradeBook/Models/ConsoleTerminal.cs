@@ -125,7 +125,7 @@ namespace GradeBook.Models
             {
                 if (e is CommandFormatException)
                 {
-                    var message = this.school.CommandInfos.FirstOrDefault(ci => ci.Name == e.Message)?.Format;
+                    var message = this.commandInfos.FirstOrDefault(ci => ci.Name == e.Message)?.Format;
                     if (!string.IsNullOrWhiteSpace(message))
                     {
                         this.Log(message);
