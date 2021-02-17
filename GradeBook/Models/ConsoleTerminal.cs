@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
 using GradeBook.Common;
 using GradeBook.Exceptions;
 
@@ -8,11 +13,16 @@ namespace GradeBook.Models
     public class ConsoleTerminal : ITerminal
     {
         private readonly School school;
+        private List<CommandInfo> commandInfos;
+        private readonly CommandValidator validator;
+
 
         public ConsoleTerminal(School school)
         {
             this.school = school;
             this.IsRunning = true;
+            this.ReadCommandInfo();
+            this.validator = new CommandValidator();
         }
 
         public bool IsRunning { get; set; }
@@ -28,7 +38,7 @@ namespace GradeBook.Models
                 {
                     case "add-student":
                     {
-                        var studentName = this.school.Validator.ValidateAddStudent(command, commandLine);
+                        var studentName = this.validator.ValidateAddStudent(command, commandLine);
                         this.school.AddStudent(new Student {FullName = studentName});
                         this.Log(Messages.StudentAddedMsg, studentName);
                         break;
@@ -36,7 +46,7 @@ namespace GradeBook.Models
                     case "add-course":
                     {
                         var (semester, courseName, lectureHours, practiceHours, teacherName) =
-                            this.school.Validator.ValidateAddCourse(command, commandLine);
+                            this.validator.ValidateAddCourse(command, commandLine);
                         var course = new Course
                         {
                             Name = courseName,
@@ -58,7 +68,7 @@ namespace GradeBook.Models
                     case "add-grade":
                     {
                         var (studentName, courseName, grade) =
-                            this.school.Validator.ValidateAddGrade(command, commandLine);
+                            this.validator.ValidateAddGrade(command, commandLine);
                         this.school.AddGrade(studentName, courseName, grade);
                         this.Log(Messages.GradeAddedMsg, courseName, grade.ToString(CultureInfo.InvariantCulture),
                             studentName);
@@ -68,7 +78,7 @@ namespace GradeBook.Models
                     {
                         var data = Console.ReadLine().Split(";");
                         var (studentName, courseInfos) =
-                            this.school.Validator.ValidateAddGradesBulk(command, commandLine, data);
+                            this.validator.ValidateAddGradesBulk(command, commandLine, data);
 
                         this.school.AddGradesBulk(studentName, courseInfos);
                         this.Log(Messages.GradesAdded);
@@ -76,14 +86,14 @@ namespace GradeBook.Models
                     }
                     case "get-grades":
                     {
-                        var studentName = this.school.Validator.ValidateGetGrades(command, commandLine);
+                        var studentName = this.validator.ValidateGetGrades(command, commandLine);
                         var result = this.school.GetGradesString(studentName);
                         this.Log(result);
                         break;
                     }
                     case "get-semester-stats":
                     {
-                        var studentName = this.school.Validator.ValidateGetSemesterStats(command, commandLine);
+                        var studentName = this.validator.ValidateGetSemesterStats(command, commandLine);
                         var result = this.school.GetSemesterStats(studentName);
                         this.Log(result);
                         break;
@@ -95,7 +105,7 @@ namespace GradeBook.Models
                     }
                     case "h":
                     {
-                        this.Log(this.school.GetCommandHelp());
+                        this.Log(this.GetCommandHelp());
                         break;
                     }
                     case "exit":
@@ -113,6 +123,15 @@ namespace GradeBook.Models
             catch (Exception e) when (e is CommandFormatException || e is NotFoundException ||
                                       e is EntityExistsException)
             {
+                if (e is CommandFormatException)
+                {
+                    var message = this.school.CommandInfos.FirstOrDefault(ci => ci.Name == e.Message)?.Format;
+                    if (!string.IsNullOrWhiteSpace(message))
+                    {
+                        this.Log(message);
+                    }
+                    
+                }
                 this.Log(e.Message);
             }
         }
@@ -135,6 +154,30 @@ namespace GradeBook.Models
         public void Log(string message, params string[] msgParams)
         {
             Console.WriteLine(message, msgParams);
+        }
+
+        /// <summary>
+        ///     Return a list of the available console commands
+        /// </summary>
+        /// <returns></returns>
+        private string GetCommandHelp()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(string.Format(Messages.AvailableCommands, this.school.Name) + new string('-', 20));
+
+            foreach (var commandInfo in this.commandInfos)
+            {
+                sb.AppendLine(commandInfo.ToString());
+                sb.AppendLine(new string('-', 20));
+            }
+
+            return sb.ToString();
+        }
+
+        private void ReadCommandInfo()
+        {
+            var jsonInfo = File.ReadAllText(Program.CommandInfoFilePath);
+            this.commandInfos = JsonSerializer.Deserialize<List<CommandInfo>>(jsonInfo);
         }
     }
 }

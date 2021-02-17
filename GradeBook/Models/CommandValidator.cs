@@ -9,21 +9,17 @@ namespace GradeBook.Models
 {
     public class CommandValidator
     {
-        private readonly School school;
+        //private readonly School school;
 
-        public CommandValidator(School school)
-        {
-            this.school = school;
-        }
-
+        
         public string ValidateAddStudent(string command, string[] commandLine)
         {
-            if (!this.IsCorrectLen(commandLine, 2)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (!this.IsCorrectLen(commandLine, 2)) throw new CommandFormatException(command);
 
             var studentName = commandLine[1].Trim();
             if (!Regex.IsMatch(studentName, "^[a-zA-Z ]*$") ||
                 string.IsNullOrWhiteSpace(studentName))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             return studentName;
         }
@@ -31,16 +27,16 @@ namespace GradeBook.Models
         public (int semester, string courseName, int lectureHours, int practiceHours, string teacherName)
             ValidateAddCourse(string command, string[] parameters)
         {
-            if (!this.IsCorrectLen(parameters, 2)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (!this.IsCorrectLen(parameters, 2)) throw new CommandFormatException(command);
             var courseDataParts = parameters[1].Split(",").Select(p => p.Trim()).ToArray();
 
             if (!this.IsCorrectLen(courseDataParts, 5))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             var courseName = courseDataParts[1];
             var teacherName = courseDataParts[4];
             if (string.IsNullOrWhiteSpace(courseName) || string.IsNullOrWhiteSpace(teacherName))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             try
             {
@@ -52,7 +48,7 @@ namespace GradeBook.Models
             }
             catch (Exception e) when (e is FormatException || e is ArgumentNullException || e is OverflowException)
             {
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
             }
         }
 
@@ -60,17 +56,17 @@ namespace GradeBook.Models
             string[] parameters)
         {
             if (!this.IsCorrectLen(parameters, 2))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             var dataParts = parameters[1].Split(",");
-            if (!this.IsCorrectLen(dataParts, 3)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (!this.IsCorrectLen(dataParts, 3)) throw new CommandFormatException(command);
 
             var studentName = dataParts[0].Trim();
             if (string.IsNullOrWhiteSpace(studentName))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             var courseName = dataParts[1].Trim();
-            if (string.IsNullOrWhiteSpace(courseName)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (string.IsNullOrWhiteSpace(courseName)) throw new CommandFormatException(command);
 
             double grade = 0;
             try
@@ -79,7 +75,7 @@ namespace GradeBook.Models
             }
             catch (FormatException)
             {
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
             }
 
             return (studentName, courseName, grade);
@@ -88,11 +84,11 @@ namespace GradeBook.Models
         public string ValidateGetSemesterStats(string command, string[] parameters)
         {
             if (!this.IsCorrectLen(parameters, 2))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             var studentName = parameters[1].Trim();
             if (string.IsNullOrWhiteSpace(studentName))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
 
             return studentName;
         }
@@ -104,18 +100,18 @@ namespace GradeBook.Models
 
         public string ValidateGetGrades(string command, string[] parameters)
         {
-            if (!this.IsCorrectLen(parameters, 2)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (!this.IsCorrectLen(parameters, 2)) throw new CommandFormatException(command);
             var studentName = parameters[1].Trim();
 
             if (string.IsNullOrWhiteSpace(studentName))
-                throw new CommandFormatException(this.GetCommandFormat(command));
+                throw new CommandFormatException(command);
             return studentName;
         }
 
         public (string Student, List<CourseInfo> CourseInfos)
             ValidateAddGradesBulk(string command, string[] commandLine, string[] data)
         {
-            if (!this.IsCorrectLen(commandLine, 2)) throw new CommandFormatException(this.GetCommandFormat(command));
+            if (!this.IsCorrectLen(commandLine, 2)) throw new CommandFormatException(command);
 
             var studentName = commandLine[1].Trim();
 
@@ -124,7 +120,7 @@ namespace GradeBook.Models
             foreach (var courseGrade in data)
             {
                 var parameters = courseGrade.Split(",").Select(s => s.Trim()).ToArray();
-                if (!this.IsCorrectLen(parameters, 6)) throw new CommandFormatException(this.GetCommandFormat(command));
+                if (!this.IsCorrectLen(parameters, 6)) throw new CommandFormatException(command);
 
                 try
                 {
@@ -136,7 +132,7 @@ namespace GradeBook.Models
                     var grade = double.Parse(parameters[5], CultureInfo.InvariantCulture);
 
                     if (string.IsNullOrWhiteSpace(courseName) || string.IsNullOrWhiteSpace(teacherName))
-                        throw new CommandFormatException(this.GetCommandFormat(command));
+                        throw new CommandFormatException(command);
 
                     courseInfos.Add(new CourseInfo
                     {
@@ -150,16 +146,11 @@ namespace GradeBook.Models
                 }
                 catch (Exception e)
                 {
-                    throw new CommandFormatException(this.GetCommandFormat(command));
+                    throw new CommandFormatException(command);
                 }
             }
 
             return (studentName, courseInfos);
-        }
-
-        private string GetCommandFormat(string command)
-        {
-            return this.school.CommandInfos.FirstOrDefault(ci => ci.Name == command)?.Format ?? "";
         }
     }
 }

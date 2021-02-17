@@ -7,11 +7,11 @@ namespace GradeBook.Tests
 {
     public class CommandValidatorTests
     {
-        private readonly School school;
+        private readonly CommandValidator validator;
 
         public CommandValidatorTests()
         {
-            this.school = new School("TestSchool");
+            this.validator = new CommandValidator();
         }
 
         [Theory]
@@ -26,7 +26,7 @@ namespace GradeBook.Tests
         [InlineData("add-course", new[] {"add-course", "1, courseName, 5, 5, "})]
         public void ValidateAddCourse_IncorrectInput_ShouldDisplayError(string command, string[] commandLine)
         {
-            Assert.Throws<CommandFormatException>(() => this.school.Validator.ValidateAddCourse(command, commandLine));
+            Assert.Throws<CommandFormatException>(() => this.validator.ValidateAddCourse(command, commandLine));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace GradeBook.Tests
 
             var expected = (semesterInput, courseNameInput, lectureCountInput, practiceCountInput, teacherNameInput);
             var (semester, courseName, lectureCount, practiceCount, teacherName) =
-                this.school.Validator.ValidateAddCourse(command, commandLine);
+                this.validator.ValidateAddCourse(command, commandLine);
 
             var result = expected.semesterInput == semester &&
                          expected.lectureCountInput == lectureCount &&
@@ -64,7 +64,7 @@ namespace GradeBook.Tests
         [InlineData("add-student", new[] {"add-student", "studentName, Another name"})]
         public void ValidateAddStudent_IncorrectInput_ShouldTrhow(string command, string[] commandLine)
         {
-            Assert.Throws<CommandFormatException>(() => this.school.Validator.ValidateAddStudent(command, commandLine));
+            Assert.Throws<CommandFormatException>(() => this.validator.ValidateAddStudent(command, commandLine));
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace GradeBook.Tests
         {
             const string studentName = "Trendafil Akatsiev";
             const string command = "add-student";
-            var actual = this.school.Validator.ValidateAddStudent(command, new[] {command, studentName});
+            var actual = this.validator.ValidateAddStudent(command, new[] {command, studentName});
             var expected = studentName;
             Assert.Equal(expected, actual);
         }
@@ -87,7 +87,7 @@ namespace GradeBook.Tests
         [InlineData("add-grade", new[] {"add-grade", " ,course , 5"})]
         public void ValidateAddGrade_IncorrectInput_ShouldThrow(string command, string[] commandLine)
         {
-            Assert.Throws<CommandFormatException>(() => this.school.Validator.ValidateAddGrade(command, commandLine));
+            Assert.Throws<CommandFormatException>(() => this.validator.ValidateAddGrade(command, commandLine));
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace GradeBook.Tests
             var grade = 6;
 
             var actual =
-                this.school.Validator.ValidateAddGrade(command,
+                this.validator.ValidateAddGrade(command,
                     new[] {command, $"{studentName}, {courseName}, {grade}"});
             Assert.Equal((studentName, courseName, grade), actual);
         }
@@ -122,7 +122,7 @@ namespace GradeBook.Tests
             string[] data)
         {
             Assert.Throws<CommandFormatException>(() =>
-                this.school.Validator.ValidateAddGradesBulk(command, commandLine, data));
+                this.validator.ValidateAddGradesBulk(command, commandLine, data));
         }
 
         [Fact]
@@ -146,7 +146,7 @@ namespace GradeBook.Tests
                     TeacherName = "Frank Sinatra", Grade = 2
                 }
             });
-            var actual = this.school.Validator.ValidateAddGradesBulk(command, commandLine, courseData);
+            var actual = this.validator.ValidateAddGradesBulk(command, commandLine, courseData);
 
             var areEqual = expected.Item1 == actual.Student;
             if (areEqual)
@@ -160,7 +160,6 @@ namespace GradeBook.Tests
                     }
                 }
             }
-
             Assert.True(areEqual);
         }
     }

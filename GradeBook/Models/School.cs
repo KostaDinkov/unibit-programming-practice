@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using GradeBook.Common;
 using GradeBook.Exceptions;
 
@@ -10,17 +8,12 @@ namespace GradeBook.Models
 {
     public class School
     {
-        //private readonly ITerminal terminal;
-
         public School(string name)
         {
             this.Name = name;
             this.Students = new List<Student>();
             this.Courses = new List<Course>();
-            //this.terminal = terminal;
-            this.CommandInfos = new List<CommandInfo>();
-            this.Validator = new CommandValidator(this);
-            this.ReadCommandInfo();
+            
         }
 
         public List<CommandInfo> CommandInfos { get; private set; }
@@ -34,6 +27,10 @@ namespace GradeBook.Models
 
         public string Name { get; }
 
+        /// <summary>
+        ///     Adds a student to the school
+        /// </summary>
+        /// <param name="student"></param>
         public void AddStudent(Student student)
         {
             if (this.Students.Any(s => s.FullName == student.FullName))
@@ -42,7 +39,10 @@ namespace GradeBook.Models
             this.Students.Add(student);
         }
 
-
+        /// <summary>
+        ///     Adds a course to the school
+        /// </summary>
+        /// <param name="course"></param>
         public void AddCourse(Course course)
         {
             if (this.Courses.Any(c => c.Name == course.Name))
@@ -51,6 +51,10 @@ namespace GradeBook.Models
             this.Courses.Add(course);
         }
 
+        /// <summary>
+        ///     Gets a string representation of the list of courses, added to the school
+        /// </summary>
+        /// <returns></returns>
         public string GetCoursesString()
         {
             var sb = new StringBuilder();
@@ -68,6 +72,12 @@ namespace GradeBook.Models
             return sb.ToString().Trim('\r', '\n');
         }
 
+        /// <summary>
+        ///     Adds a course grade to the student
+        /// </summary>
+        /// <param name="name">The name of the student</param>
+        /// <param name="courseName">The name of the course</param>
+        /// <param name="grade">The grade (2-6)</param>
         public void AddGrade(string name, string courseName, double grade)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == name);
@@ -79,6 +89,12 @@ namespace GradeBook.Models
             student.AddGrade(courseName, grade);
         }
 
+        /// <summary>
+        ///     Adds grade information for multiple courses to a student. If the student or a course do not exist, new ones will be
+        ///     created.
+        /// </summary>
+        /// <param name="name">The full name of the student</param>
+        /// <param name="courseInfos">A list of course entries, containing course information and a course grade for the student</param>
         public void AddGradesBulk(string name, List<CourseInfo> courseInfos)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == name);
@@ -106,6 +122,10 @@ namespace GradeBook.Models
             }
         }
 
+        /// <summary>
+        ///     Returns all grades for the student as a formatted string.
+        /// </summary>
+        /// <param name="name">The name of the student</param>
         public string GetGradesString(string name)
         {
             var sb = new StringBuilder();
@@ -145,6 +165,10 @@ namespace GradeBook.Models
             return sb.ToString();
         }
 
+        /// <summary>
+        ///     Returns the statistics for the semester for the given student.
+        /// </summary>
+        /// <param name="studentName">The name of the student</param>
         public string GetSemesterStats(string studentName)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == studentName);
@@ -182,34 +206,13 @@ namespace GradeBook.Models
             return sb.ToString();
         }
 
+
+        /// <summary>
+        ///     Returns a list of all students added to the school.
+        /// </summary>
         public string GetStudentsString()
         {
             return string.Join("\n", this.Students);
         }
-
-        public string GetCommandHelp()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(string.Format(Messages.AvailableCommands, this.Name) + new string('-', 20));
-
-            foreach (var commandInfo in this.CommandInfos)
-            {
-                sb.AppendLine(commandInfo.ToString());
-                sb.AppendLine(new string('-', 20));
-            }
-
-            return sb.ToString();
-        }
-
-        private void ReadCommandInfo()
-        {
-            var jsonInfo = File.ReadAllText(Program.CommandInfoFilePath);
-            this.CommandInfos = JsonSerializer.Deserialize<List<CommandInfo>>(jsonInfo);
-        }
-
-        //public void StartTerminal()
-        //{
-        //    this.terminal.Start();
-        //}
     }
 }
