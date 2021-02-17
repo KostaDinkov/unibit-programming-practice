@@ -80,6 +80,7 @@ namespace ParkingSystem.Models
                 }
                 case "Край":
                     this.WriteLine(this.parkingManager.PrintParkingStatus());
+                    this.isRunning = false;
                     break;
             }
         }
