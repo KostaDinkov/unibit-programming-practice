@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,19 +10,20 @@ namespace GradeBook.Models
 {
     public class School
     {
-        private readonly ITerminal terminal;
-        public List<CommandInfo> CommandInfos { get; private set; }
+        //private readonly ITerminal terminal;
 
         public School(string name)
         {
             this.Name = name;
             this.Students = new List<Student>();
             this.Courses = new List<Course>();
-            this.terminal = new ConsoleTerminal(this);
+            //this.terminal = terminal;
             this.CommandInfos = new List<CommandInfo>();
             this.Validator = new CommandValidator(this);
             this.ReadCommandInfo();
         }
+
+        public List<CommandInfo> CommandInfos { get; private set; }
 
         public CommandValidator Validator { get; }
 
@@ -37,25 +37,27 @@ namespace GradeBook.Models
         public void AddStudent(Student student)
         {
             if (this.Students.Any(s => s.FullName == student.FullName))
-            {
-                return;
-            }
+                throw new EntityExistsException(Messages.StudentExistsMsg);
+
             this.Students.Add(student);
         }
 
 
         public void AddCourse(Course course)
         {
+            if (this.Courses.Any(c => c.Name == course.Name))
+                throw new EntityExistsException(Messages.CourseExistsMst);
+
             this.Courses.Add(course);
         }
 
         public string GetCoursesString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(string.Format(Messages.ListOfAllCoursesMsg,this.Name));
+            sb.AppendLine(string.Format(Messages.ListOfAllCoursesMsg, this.Name));
             var counter = 1;
 
-            foreach (var course in this.Courses.OrderBy(c => c.Semester).ThenBy(c=>c.Name))
+            foreach (var course in this.Courses.OrderBy(c => c.Semester).ThenBy(c => c.Name))
             {
                 sb.AppendLine($"  {counter}. {course.Name}, {course.TeacherName}");
                 counter++;
@@ -69,22 +71,38 @@ namespace GradeBook.Models
         public void AddGrade(string name, string courseName, double grade)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == name);
-            if (student != null)
-            {
-                student.AddGrade(courseName, grade);
-            }
-            else
-            {
-                throw new NotFoundException(Messages.StudentNotFoundMsg);
-            }
+            var course = this.Courses.FirstOrDefault(c => c.Name == courseName);
+
+            if (student == null) throw new NotFoundException(Messages.StudentNotFoundMsg);
+            if (course == null) throw new NotFoundException(Messages.CourseNotFoundMsg);
+
+            student.AddGrade(courseName, grade);
         }
 
-        public void AddGradesBulk(string name, Dictionary<string, double> courseGrades)
+        public void AddGradesBulk(string name, List<CourseInfo> courseInfos)
         {
-            var student = this.Students.FirstOrDefault(s => s.FullName == name) ?? new Student {FullName = name};
-            foreach (var courseGrade in courseGrades)
+            var student = this.Students.FirstOrDefault(s => s.FullName == name);
+            if (student == null)
             {
-                student.AddGrade(courseGrade.Key, courseGrade.Value);
+                student = new Student {FullName = name};
+                this.AddStudent(student);
+            }
+
+            foreach (var courseInfo in courseInfos)
+            {
+                if (this.Courses.All(c => c.Name != courseInfo.Name))
+                {
+                    this.AddCourse(new Course
+                    {
+                        Name = courseInfo.Name,
+                        Semester = courseInfo.Semester,
+                        PracticeCount = courseInfo.PracticeCount,
+                        LectureCount = courseInfo.LectureCount,
+                        TeacherName = courseInfo.TeacherName
+                    });
+                }
+
+                student.AddGrade(courseInfo.Name, courseInfo.Grade);
             }
         }
 
@@ -93,6 +111,7 @@ namespace GradeBook.Models
             var sb = new StringBuilder();
 
             var student = this.Students.FirstOrDefault(s => s.FullName == name);
+            if (student.CoursesGrades.Count == 0) return Messages.NoGradesMsg;
 
             if (student != null)
             {
@@ -114,8 +133,13 @@ namespace GradeBook.Models
                 foreach (var entry in result)
                 {
                     sb.AppendLine(
-                        string.Format(Messages.GradesLineMsg,entry.Semester, entry.Name, entry.TeacherName, entry.Grade));
+                        string.Format(Messages.GradesLineMsg, entry.Semester, entry.Name, entry.TeacherName,
+                            entry.Grade));
                 }
+            }
+            else
+            {
+                throw new NotFoundException(Messages.StudentNotFoundMsg);
             }
 
             return sb.ToString();
@@ -124,7 +148,8 @@ namespace GradeBook.Models
         public string GetSemesterStats(string studentName)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == studentName);
-            
+            if (student == null) throw new NotFoundException(Messages.StudentNotFoundMsg);
+
             var courseCount = student.CoursesGrades.Count;
 
             var result = student.CoursesGrades.Join(this.Courses, kvp => kvp.Key, course => course.Name,
@@ -140,12 +165,15 @@ namespace GradeBook.Models
                     Semester = key, TotalHours = value.Sum(c => c.TotalHours),
                     AvgGrade = value.Average(c => c.Grade)
                 }).OrderBy(s => s.Semester);
+
             var sb = new StringBuilder();
             sb.AppendLine(string.Format(Messages.SemesterStatsMsg, student.FullName, courseCount));
+
             var counter = 1;
             foreach (var entry in result)
             {
-                sb.AppendLine(string.Format(Messages.SemesterStatsLineMs,counter, entry.Semester, entry.TotalHours, entry.AvgGrade));
+                sb.AppendLine(string.Format(Messages.SemesterStatsLineMs, counter, entry.Semester, entry.TotalHours,
+                    entry.AvgGrade));
                 counter++;
             }
 
@@ -179,9 +207,9 @@ namespace GradeBook.Models
             this.CommandInfos = JsonSerializer.Deserialize<List<CommandInfo>>(jsonInfo);
         }
 
-        public void StartTerminal()
-        {
-            this.terminal.Start();
-        }
+        //public void StartTerminal()
+        //{
+        //    this.terminal.Start();
+        //}
     }
 }

@@ -5,12 +5,12 @@ namespace GradeBook
     public class Program
     {
         public const string CommandInfoFilePath = "command-help.json";
+
         public static void Main()
         {
             var school = new School("Unibit");
-
-            school.StartTerminal();
-
+            var terminal = new ConsoleTerminal(school);
+            terminal.Start();
         }
     }
 }

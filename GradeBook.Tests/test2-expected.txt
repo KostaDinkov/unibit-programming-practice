@@ -1,6 +1,7 @@
 ﻿Unibit learning management system.
 For a list of available commands type h:
 Enter Command:
+Grades added successfuly.
 Sam Vimes
 List of all courses at Unibit
   1. Law, lord Vetinari

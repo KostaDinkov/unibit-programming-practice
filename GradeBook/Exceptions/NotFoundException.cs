@@ -7,7 +7,8 @@ namespace GradeBook.Exceptions
         public NotFoundException()
         {
         }
-        public NotFoundException(string msg):base(msg)
+
+        public NotFoundException(string msg) : base(msg)
         {
         }
     }

@@ -35,6 +35,11 @@ namespace GradeBook.Models
 
         public double GetAverageGrade()
         {
+            if (this.CoursesGrades.Count == 0)
+            {
+                return 0;
+            }
+
             return this.CoursesGrades.Average(k => k.Value);
         }
     }

@@ -1,31 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-
-namespace GradeBook.Common
+﻿namespace GradeBook.Common
 {
     public static class Messages
     {
+        public const string GradesAdded = "Grades added successfuly.";
+
+
         public const string WelcomeMsg = "{0} learning management system.\r\n" +
                                          "For a list of available commands type h:\r\n" +
                                          "Enter Command:";
 
+        //add student
         public const string StudentAddedMsg = "Student {0} added to school";
-        
+
         public const string CourseAddedMsg = "Course {0} added to school";
-        
+
         public const string ListOfAllCoursesMsg = "List of all courses at {0}";
-        
+
         public const string TotalCoursesMsg = "Total: {0} courses.";
+
+        public const string GradeAddedMsg = "{0} grade {1} added to student {2}";
 
         //get-grades
         public const string GradesForMsg = "Grades for student {0}:";
+
         public const string GradesLineMsg =
             "Semester: {0}, Course: {1}, Teacher: {2}, Grade: {3}";
 
         //get-semester-stats
-        public const string SemesterStatsMsg = "Student: {0}\r\n" + 
+        public const string SemesterStatsMsg = "Student: {0}\r\n" +
                                                "Total courses: {1}\r\n" +
                                                "Semester average grades and total study hours:";
 
@@ -41,8 +43,13 @@ namespace GradeBook.Common
         //Error Messages
         public const string CommandFormatErrorMsg = "Command is not in the specified format.";
         public const string StudentNotFoundMsg = "The student could not be found";
+        public const string CourseNotFoundMsg = "The course could not be found";
+        public const string StudentExistsMsg = "Student already in school.";
+        public const string CourseExistsMst = "Course already added to school";
 
         public const string CommandNotRecognizedMsg =
             "Command Not Recognized. Please enter a valid command or enter h for help";
+
+        public const string NoGradesMsg = "Student has no grades yet";
     }
 }

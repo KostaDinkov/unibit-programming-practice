@@ -1,4 +1,5 @@
-﻿using GradeBook.Exceptions;
+﻿using System.Collections.Generic;
+using GradeBook.Exceptions;
 using GradeBook.Models;
 using Xunit;
 
@@ -31,32 +32,28 @@ namespace GradeBook.Tests
         [Fact]
         public void ValidateAddCourse_CorrectInput_ShouldReturn()
         {
-            var semester = 1;
-            var courseName = "courseName";
-            var lectureCount = 5;
-            var practiceCount = 5;
-            var teacherName = "Dimov";
+            var semesterInput = 1;
+            var courseNameInput = "courseName";
+            var lectureCountInput = 5;
+            var practiceCountInput = 5;
+            var teacherNameInput = "Dimov";
 
             var command = "add-course";
             var commandLine = new[]
-                {command, $"{semester}, {courseName}, {lectureCount}, {practiceCount}, {teacherName}"};
-
-            var actual = this.school.Validator.ValidateAddCourse(command, commandLine);
-
-            var expected = new Course
             {
-                Semester = semester,
-                Name = courseName,
-                LectureCount = lectureCount,
-                PracticeCount = practiceCount,
-                TeacherName = teacherName
+                command,
+                $"{semesterInput}, {courseNameInput}, {lectureCountInput}, {practiceCountInput}, {teacherNameInput}"
             };
 
-            var result = actual.Name == expected.Name &&
-                         actual.LectureCount == expected.LectureCount &&
-                         actual.PracticeCount == expected.PracticeCount &&
-                         actual.Semester == expected.Semester &&
-                         actual.TeacherName == expected.TeacherName;
+            var expected = (semesterInput, courseNameInput, lectureCountInput, practiceCountInput, teacherNameInput);
+            var (semester, courseName, lectureCount, practiceCount, teacherName) =
+                this.school.Validator.ValidateAddCourse(command, commandLine);
+
+            var result = expected.semesterInput == semester &&
+                         expected.lectureCountInput == lectureCount &&
+                         expected.practiceCountInput == practiceCount &&
+                         expected.courseNameInput == courseName &&
+                         expected.teacherNameInput == teacherName;
 
             Assert.True(result);
         }
@@ -76,8 +73,8 @@ namespace GradeBook.Tests
             const string studentName = "Trendafil Akatsiev";
             const string command = "add-student";
             var actual = this.school.Validator.ValidateAddStudent(command, new[] {command, studentName});
-
-            var expected = new Student() {FullName = studentName};
+            var expected = studentName;
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
@@ -94,14 +91,17 @@ namespace GradeBook.Tests
         }
 
         [Fact]
-        public void ValidateAddGrade_CorrectInput_ShouldPass()
+        public void ValidateAddGrade_CorrectInput_ShouldReturn()
         {
             var command = "add-grade";
             var studentName = "Anakin Skywalker";
             var courseName = "Force Sensitivity";
             var grade = 6;
 
-            this.school.Validator.ValidateAddGrade(command, new[] {command, $"{studentName}, {courseName}, {grade}"});
+            var actual =
+                this.school.Validator.ValidateAddGrade(command,
+                    new[] {command, $"{studentName}, {courseName}, {grade}"});
+            Assert.Equal((studentName, courseName, grade), actual);
         }
 
         [Theory]
@@ -131,9 +131,37 @@ namespace GradeBook.Tests
             var command = "add-grades-bulk";
             var commandLine = new[] {"add-grades-bulk", "Bobby Dylan"};
             var courseData = new[]
-                {"1, Guitar mastery, 50, 50, Jimmy Hendrix, 6","2, Vocal Mastery, 50, 50, Frank Sinatra, 2"};
+                {"1, Guitar mastery, 50, 50, Jimmy Hendrix, 6", "2, Vocal Mastery, 50, 50, Frank Sinatra, 2"};
 
-            this.school.Validator.ValidateAddGradesBulk(command, commandLine, courseData);
+            var expected = ("Bobby Dylan", new List<CourseInfo>
+            {
+                new CourseInfo
+                {
+                    Semester = 1, LectureCount = 50, Name = "Guitar mastery", PracticeCount = 50,
+                    TeacherName = "Jimmy Hendrix", Grade = 6
+                },
+                new CourseInfo
+                {
+                    Semester = 2, Name = "Vocal Mastery", LectureCount = 50, PracticeCount = 50,
+                    TeacherName = "Frank Sinatra", Grade = 2
+                }
+            });
+            var actual = this.school.Validator.ValidateAddGradesBulk(command, commandLine, courseData);
+
+            var areEqual = expected.Item1 == actual.Student;
+            if (areEqual)
+            {
+                for (var i = 0; i < actual.CourseInfos.Count; i++)
+                {
+                    if (!actual.CourseInfos[i].Equals(expected.Item2[i]))
+                    {
+                        areEqual = false;
+                        break;
+                    }
+                }
+            }
+
+            Assert.True(areEqual);
         }
     }
 }

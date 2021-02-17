@@ -1,15 +1,11 @@
-﻿
-namespace GradeBook.Models
+﻿namespace GradeBook.Models
 {
-    interface ITerminal
+    public interface ITerminal
     {
         public bool IsRunning { get; set; }
         public void ReadCommand();
 
         public void Log(string message);
         public void Start();
-
-
-
     }
 }

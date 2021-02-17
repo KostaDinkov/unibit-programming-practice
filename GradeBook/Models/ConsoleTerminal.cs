@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using GradeBook.Common;
 using GradeBook.Exceptions;
 
@@ -21,64 +22,96 @@ namespace GradeBook.Models
             try
             {
                 var commandLine = Console.ReadLine().Split(":");
-
                 var command = commandLine[0].Trim();
-                string result;
+
                 switch (command)
                 {
                     case "add-student":
-                        var student = this.school.Validator.ValidateAddStudent(command, commandLine);
-                        this.school.AddStudent(student);
-                        this.Log(Messages.StudentAddedMsg, student.FullName);
+                    {
+                        var studentName = this.school.Validator.ValidateAddStudent(command, commandLine);
+                        this.school.AddStudent(new Student {FullName = studentName});
+                        this.Log(Messages.StudentAddedMsg, studentName);
                         break;
-
+                    }
                     case "add-course":
-                        var course = this.school.Validator.ValidateAddCourse(command, commandLine);
+                    {
+                        var (semester, courseName, lectureHours, practiceHours, teacherName) =
+                            this.school.Validator.ValidateAddCourse(command, commandLine);
+                        var course = new Course
+                        {
+                            Name = courseName,
+                            LectureCount = lectureHours,
+                            PracticeCount = practiceHours,
+                            TeacherName = teacherName,
+                            Semester = semester
+                        };
                         this.school.AddCourse(course);
                         this.Log(Messages.CourseAddedMsg, course.Name);
                         break;
-
+                    }
                     case "get-courses":
-                        result = this.school.GetCoursesString();
+                    {
+                        var result = this.school.GetCoursesString();
                         this.Log(result);
                         break;
-
+                    }
                     case "add-grade":
-                        this.school.Validator.ValidateAddGrade(command, commandLine);
+                    {
+                        var (studentName, courseName, grade) =
+                            this.school.Validator.ValidateAddGrade(command, commandLine);
+                        this.school.AddGrade(studentName, courseName, grade);
+                        this.Log(Messages.GradeAddedMsg, courseName, grade.ToString(CultureInfo.InvariantCulture),
+                            studentName);
                         break;
-
+                    }
                     case "add-grades-bulk":
+                    {
                         var data = Console.ReadLine().Split(";");
-                        var studentGrades = this.school.Validator.ValidateAddGradesBulk(command, commandLine, data);
-                        this.school.AddGradesBulk(studentGrades.Item1.FullName, studentGrades.Item2);
-                        break;
+                        var (studentName, courseInfos) =
+                            this.school.Validator.ValidateAddGradesBulk(command, commandLine, data);
 
+                        this.school.AddGradesBulk(studentName, courseInfos);
+                        this.Log(Messages.GradesAdded);
+                        break;
+                    }
                     case "get-grades":
-                        result = this.school.Validator.ValidateGetGrades(commandLine[1].Trim());
+                    {
+                        var studentName = this.school.Validator.ValidateGetGrades(command, commandLine);
+                        var result = this.school.GetGradesString(studentName);
                         this.Log(result);
                         break;
-
+                    }
                     case "get-semester-stats":
-                        result = this.school.Validator.ValidateGetSemesterStats(command, commandLine);
+                    {
+                        var studentName = this.school.Validator.ValidateGetSemesterStats(command, commandLine);
+                        var result = this.school.GetSemesterStats(studentName);
                         this.Log(result);
                         break;
-
+                    }
                     case "get-students":
+                    {
                         this.Log(this.school.GetStudentsString());
                         break;
-
+                    }
                     case "h":
+                    {
                         this.Log(this.school.GetCommandHelp());
                         break;
+                    }
                     case "exit":
+                    {
                         this.IsRunning = false;
                         break;
+                    }
                     default:
+                    {
                         this.Log(Messages.CommandNotRecognizedMsg);
                         break;
+                    }
                 }
             }
-            catch (Exception e) when (e is CommandFormatException || e is NotFoundException)
+            catch (Exception e) when (e is CommandFormatException || e is NotFoundException ||
+                                      e is EntityExistsException)
             {
                 this.Log(e.Message);
             }
@@ -89,20 +122,19 @@ namespace GradeBook.Models
             Console.WriteLine(message);
         }
 
-        public void Log(string message, params string[] msgParams)
-        {
-
-            Console.WriteLine(message, msgParams);
-        }
-
 
         public void Start()
         {
-            Console.WriteLine(Messages.WelcomeMsg, this.school.Name);
+            this.Log(Messages.WelcomeMsg, this.school.Name);
             while (this.IsRunning)
             {
                 this.ReadCommand();
             }
+        }
+
+        public void Log(string message, params string[] msgParams)
+        {
+            Console.WriteLine(message, msgParams);
         }
     }
 }
