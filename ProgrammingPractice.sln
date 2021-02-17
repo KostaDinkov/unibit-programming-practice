@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GradeBook.Tests", "GradeBoo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParkingSystem", "ParkingManager\ParkingSystem.csproj", "{C404F339-F1C8-4D7A-AD52-FD557F896C1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restaurant", "Restaurant\Restaurant.csproj", "{402A1417-7B39-4DA3-A775-450CB0F45B50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C404F339-F1C8-4D7A-AD52-FD557F896C1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C404F339-F1C8-4D7A-AD52-FD557F896C1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C404F339-F1C8-4D7A-AD52-FD557F896C1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{402A1417-7B39-4DA3-A775-450CB0F45B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{402A1417-7B39-4DA3-A775-450CB0F45B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{402A1417-7B39-4DA3-A775-450CB0F45B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{402A1417-7B39-4DA3-A775-450CB0F45B50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
