@@ -35,6 +35,10 @@ namespace GradeBook.Models
 
         public void AddStudent(Student student)
         {
+            if (this.Students.Any(s => s.FullName == student.FullName))
+            {
+                return;
+            }
             this.Students.Add(student);
         }
 
@@ -50,7 +54,7 @@ namespace GradeBook.Models
             sb.AppendLine($"List of all courses at {this.Name}");
             var counter = 1;
 
-            foreach (var course in this.Courses.OrderBy(c => c.Name))
+            foreach (var course in this.Courses.OrderBy(c => c.Semester).ThenBy(c=>c.Name))
             {
                 sb.AppendLine($"  {counter}. {course.Name}, {course.TeacherName}");
                 counter++;
@@ -58,7 +62,7 @@ namespace GradeBook.Models
 
             sb.AppendLine($"Total: {this.Courses.Count} courses.");
 
-            return sb.ToString().Trim('\r','\n');
+            return sb.ToString().Trim('\r', '\n');
         }
 
         public void AddGrade(string name, string courseName, double grade)
@@ -119,42 +123,36 @@ namespace GradeBook.Models
         public string GetSemesterStats(string studentName)
         {
             var student = this.Students.FirstOrDefault(s => s.FullName == studentName);
-            if (student != null)
-            {
-                var courseCount = student.CoursesGrades.Count;
+            
+            var courseCount = student.CoursesGrades.Count;
 
-                var result = student.CoursesGrades.Join(this.Courses, kvp => kvp.Key, course => course.Name,
-                    (kvp, course) => new
-                    {
-                        course.Name,
-                        TotalHours = course.LectureCount + course.PracticeCount,
-                        course.Semester,
-                        Grade = kvp.Value
-                    }).GroupBy(c => c.Semester,
-                    (key, value) => new
-                    {
-                        Semester = key, TotalHours = value.Sum(c => c.TotalHours),
-                        AvgGrade = value.Average(c => c.Grade)
-                    }).OrderBy(s => s.Semester);
-                var sb = new StringBuilder();
-                sb.AppendLine($"Student: {student.FullName}");
-                sb.AppendLine($"Total courses: {courseCount}");
-                sb.AppendLine("Semester average grades and total study hours:");
-                var counter = 1;
-                foreach (var entry in result)
+            var result = student.CoursesGrades.Join(this.Courses, kvp => kvp.Key, course => course.Name,
+                (kvp, course) => new
                 {
-                    sb.AppendLine($"\t{counter}. Semester {entry.Semester}, {entry.TotalHours}: {entry.AvgGrade:F2}");
-                    counter++;
-                }
-
-                sb.AppendLine($"Total average grade: {student.GetAverageGrade():F2}");
-
-                return sb.ToString();
+                    course.Name,
+                    TotalHours = course.LectureCount + course.PracticeCount,
+                    course.Semester,
+                    Grade = kvp.Value
+                }).GroupBy(c => c.Semester,
+                (key, value) => new
+                {
+                    Semester = key, TotalHours = value.Sum(c => c.TotalHours),
+                    AvgGrade = value.Average(c => c.Grade)
+                }).OrderBy(s => s.Semester);
+            var sb = new StringBuilder();
+            sb.AppendLine($"Student: {student.FullName}");
+            sb.AppendLine($"Total courses: {courseCount}");
+            sb.AppendLine("Semester average grades and total study hours:");
+            var counter = 1;
+            foreach (var entry in result)
+            {
+                sb.AppendLine($"\t{counter}. Semester {entry.Semester}, {entry.TotalHours}: {entry.AvgGrade:F2}");
+                counter++;
             }
 
-            return "";
+            sb.AppendLine($"Total average grade: {student.GetAverageGrade():F2}");
 
-            //todo throw exception
+            return sb.ToString();
         }
 
         public string GetStudentsString()

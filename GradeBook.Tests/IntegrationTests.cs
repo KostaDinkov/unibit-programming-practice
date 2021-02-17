@@ -18,8 +18,12 @@ namespace GradeBook.Tests
             this.sw = new StringWriter(sb);
             Console.SetOut(sw);
         }
+        
         [Theory]
         [InlineData("test1-input.txt", "test1-expected.txt")]
+        [InlineData("test2-input.txt", "test2-expected.txt")]
+        //todo: add some more test cases
+
         public void MainTest(string testInputFile, string testExpectedFile)
         {
             string input = File.ReadAllText(testInputFile);

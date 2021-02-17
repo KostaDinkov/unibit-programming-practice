@@ -1,0 +1,11 @@
+﻿Unibit learning management system.
+For a list of available commands type h: 
+Enter Command:
+Sam Vimes
+List of all courses at Unibit
+  1. Law, lord Vetinari
+  2. Swimming, AquaMan
+  3. Sword Fighting, Sword Master Jin
+  4. Investigationing, dr. Watson
+  5. Patrooling, Batman
+Total: 5 courses.

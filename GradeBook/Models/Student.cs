@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace GradeBook.Models
 {
     public class Student
 
-    
+
     {
         public Student()
         {
             this.CoursesGrades = new Dictionary<string, double>();
         }
+
         public string FullName { get; set; }
-        
-        public Dictionary<string, double> CoursesGrades { get; private set; }
+
+        public Dictionary<string, double> CoursesGrades { get; }
 
         public override string ToString()
         {
@@ -29,7 +29,7 @@ namespace GradeBook.Models
             }
             else
             {
-                this.CoursesGrades.Add(courseName,grade);
+                this.CoursesGrades.Add(courseName, grade);
             }
         }
 

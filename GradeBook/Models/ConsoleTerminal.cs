@@ -58,7 +58,7 @@ namespace GradeBook.Models
                         break;
 
                     case "get-semester-stats":
-                        result = this.school.Validator.ValidateGetSemesterStats(commandLine[1].Trim());
+                        result = this.school.Validator.ValidateGetSemesterStats(command, commandLine);
                         this.Log(result);
                         break;
 

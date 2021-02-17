@@ -86,13 +86,15 @@ namespace GradeBook.Utils
 
             var student = this.school.Students.FirstOrDefault(s => s.FullName == studentName) ??
                           new Student {FullName = studentName};
-            student.CoursesGrades.Add(courseName, grade);
+            student.AddGrade(courseName, grade);
         }
 
-        public string ValidateGetSemesterStats(string input)
+        public string ValidateGetSemesterStats(string command, string[] parameters)
         {
-            this.ValidateStudent(input);
-            return this.school.GetSemesterStats(input);
+            if(!IsCorrectLen(parameters,2)) ThrowFormatError(command);
+            var studentName = parameters[1].Trim();
+            var student = this.ValidateStudent(studentName);
+            return this.school.GetSemesterStats(studentName);
         }
 
         public bool IsCorrectLen(string[] commandLine, int partCount)

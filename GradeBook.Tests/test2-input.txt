@@ -1,0 +1,4 @@
+﻿add-grades-bulk: Sam Vimes
+1, Law, 25, 30, lord Vetinari, 6; 1, Sword Fighting, 25, 30, Sword Master Jin, 4; 1, Swimming, 25, 30, AquaMan, 3; 2, Investigationing, 25, 30, dr. Watson, 4; 3, Patrooling, 25, 30, Batman, 5
+get-students:
+get-courses:

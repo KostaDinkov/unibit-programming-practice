@@ -70,7 +70,7 @@ namespace GradeBook.Tests
 
 
         [Fact]
-        public void GetSemesterStats_ShouldReturnCorrectOutput()
+        public void GetSemesterStats_CorrectInput_ShouldReturnString()
         {
             this.school.AddGrade("Angua von Uberwald", "Policemanship", 6);
             this.school.AddGrade("Angua von Uberwald", "Cooking", 3);
