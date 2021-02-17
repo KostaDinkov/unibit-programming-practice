@@ -1,4 +1,6 @@
-﻿namespace GradeBook.Models
+﻿using GradeBook.Common;
+
+namespace GradeBook.Models
 {
     public class CommandInfo
     {
@@ -11,7 +13,12 @@
         public override string ToString()
         {
             return
-                $"{this.Name}\nFormat: {this.Format}\nDescription: {this.Description}\nExample: {this.Example}";
+                string.Format(
+                    Messages.CommandInfoMsg,
+                    this.Name,
+                    this.Format,
+                    this.Description,
+                    this.Example);
         }
     }
 }

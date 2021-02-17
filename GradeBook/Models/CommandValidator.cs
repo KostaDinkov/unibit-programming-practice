@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
-using System.Transactions;
+using GradeBook.Common;
 using GradeBook.Exceptions;
-using GradeBook.Models;
 
-namespace GradeBook.Utils
+namespace GradeBook.Models
 {
     public class CommandValidator
     {
@@ -63,16 +61,16 @@ namespace GradeBook.Utils
         public void ValidateAddGrade(string command, string[] parameters)
         {
 
-            if(!IsCorrectLen(parameters, 2)) ThrowFormatError(command);
+            if(!this.IsCorrectLen(parameters, 2)) this.ThrowFormatError(command);
 
             var dataParts = parameters[1].Split(",");
-            if (!IsCorrectLen(dataParts, 3)) ThrowFormatError(command);
+            if (!this.IsCorrectLen(dataParts, 3)) this.ThrowFormatError(command);
             
             var studentName = dataParts[0].Trim();
-            if(string.IsNullOrWhiteSpace(studentName)) ThrowFormatError(command);
+            if(string.IsNullOrWhiteSpace(studentName)) this.ThrowFormatError(command);
             
             var courseName = dataParts[1].Trim();
-            if(string.IsNullOrWhiteSpace(courseName)) ThrowFormatError(command);
+            if(string.IsNullOrWhiteSpace(courseName)) this.ThrowFormatError(command);
 
             double grade = 0;
             try
@@ -81,7 +79,7 @@ namespace GradeBook.Utils
             }
             catch (FormatException)
             {
-                ThrowFormatError(command);
+                this.ThrowFormatError(command);
             }
 
             var student = this.school.Students.FirstOrDefault(s => s.FullName == studentName) ??
@@ -91,7 +89,7 @@ namespace GradeBook.Utils
 
         public string ValidateGetSemesterStats(string command, string[] parameters)
         {
-            if(!IsCorrectLen(parameters,2)) ThrowFormatError(command);
+            if(!this.IsCorrectLen(parameters,2)) this.ThrowFormatError(command);
             var studentName = parameters[1].Trim();
             var student = this.ValidateStudent(studentName);
             return this.school.GetSemesterStats(studentName);
@@ -110,7 +108,7 @@ namespace GradeBook.Utils
 
         public (Student, Dictionary<string, double>) ValidateAddGradesBulk(string command, string[] commandLine, string[] data)
         {
-            if(!IsCorrectLen(commandLine,2)) ThrowFormatError(command);
+            if(!this.IsCorrectLen(commandLine,2)) this.ThrowFormatError(command);
             
             Student student;
             var studentName = commandLine[1].Trim();
@@ -129,7 +127,7 @@ namespace GradeBook.Utils
             foreach (var courseGrade in data)
             {
                 var parameters = courseGrade.Split(",").Select(s => s.Trim()).ToArray();
-                if(!IsCorrectLen(parameters,6)) ThrowFormatError(command);
+                if(!this.IsCorrectLen(parameters,6)) this.ThrowFormatError(command);
                 
                 try
                 {
@@ -140,7 +138,7 @@ namespace GradeBook.Utils
                     var teacherName = parameters[4];
                     var grade = double.Parse(parameters[5], CultureInfo.InvariantCulture);
 
-                    if(string.IsNullOrWhiteSpace(courseName) || string.IsNullOrWhiteSpace(teacherName)) ThrowFormatError(command);
+                    if(string.IsNullOrWhiteSpace(courseName) || string.IsNullOrWhiteSpace(teacherName)) this.ThrowFormatError(command);
 
                     if (this.school.Courses.All(c => c.Name != courseName))
                     {
@@ -155,7 +153,7 @@ namespace GradeBook.Utils
                 }
                 catch (Exception e)
                 {
-                    ThrowFormatError(command);
+                    this.ThrowFormatError(command);
                 }
             }
 
@@ -168,7 +166,7 @@ namespace GradeBook.Utils
             var student = this.school.Students.FirstOrDefault(s => s.FullName == studentName);
             if (student == null)
             {
-                throw new NotFoundException("The student could not be found");
+                throw new NotFoundException(Messages.StudentNotFoundMsg);
             }
 
             return student;

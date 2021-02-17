@@ -1,5 +1,5 @@
 ﻿Unibit learning management system.
-For a list of available commands type h: 
+For a list of available commands type h:
 Enter Command:
 Sam Vimes
 List of all courses at Unibit

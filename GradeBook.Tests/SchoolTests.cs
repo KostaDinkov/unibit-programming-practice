@@ -82,9 +82,9 @@ namespace GradeBook.Tests
             var expected = "Student: Angua von Uberwald\r\n" +
                            "Total courses: 4\r\n" +
                            "Semester average grades and total study hours:\r\n" +
-                           "\t1. Semester 1, 260: 5.00\r\n" +
-                           "\t2. Semester 2, 130: 3.00\r\n" +
-                           "\t3. Semester 3, 130: 5.00\r\n" +
+                           "  1. Semester 1, 260: 5.00\r\n" +
+                           "  2. Semester 2, 130: 3.00\r\n" +
+                           "  3. Semester 3, 130: 5.00\r\n" +
                            "Total average grade: 4.50\r\n";
 
             Assert.Equal(expected, actual);

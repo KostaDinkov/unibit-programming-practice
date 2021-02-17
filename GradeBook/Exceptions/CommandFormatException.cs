@@ -1,17 +1,17 @@
 ﻿using System;
+using GradeBook.Common;
 
 namespace GradeBook.Exceptions
 {
     public class CommandFormatException : Exception
     {
-        public CommandFormatException():base("Command is not in the specified format")
+        public CommandFormatException():base(Messages.CommandFormatErrorMsg)
         {
             
         }
 
-        public CommandFormatException(string msg) : base(msg)
+        public CommandFormatException(string msg):base(Messages.CommandFormatErrorMsg+ "\n" + msg)
         {
-
         }
     }
 }

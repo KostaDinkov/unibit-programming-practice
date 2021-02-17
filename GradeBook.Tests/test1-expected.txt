@@ -1,9 +1,9 @@
 ﻿Unibit learning management system.
-For a list of available commands type h: 
+For a list of available commands type h:
 Enter Command:
-Student Dinkov added to School
+Student Dinkov added to school
 Dinkov
-Course Algebra added to School
+Course Algebra added to school
 List of all courses at Unibit
   1. Algebra, Leibnitz
 Total: 1 courses.

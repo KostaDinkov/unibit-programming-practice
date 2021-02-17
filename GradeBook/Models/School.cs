@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using GradeBook.Common;
 using GradeBook.Exceptions;
-using GradeBook.Utils;
 
 namespace GradeBook.Models
 {
@@ -51,7 +52,7 @@ namespace GradeBook.Models
         public string GetCoursesString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"List of all courses at {this.Name}");
+            sb.AppendLine(string.Format(Messages.ListOfAllCoursesMsg,this.Name));
             var counter = 1;
 
             foreach (var course in this.Courses.OrderBy(c => c.Semester).ThenBy(c=>c.Name))
@@ -60,7 +61,7 @@ namespace GradeBook.Models
                 counter++;
             }
 
-            sb.AppendLine($"Total: {this.Courses.Count} courses.");
+            sb.AppendLine(string.Format(Messages.TotalCoursesMsg, this.Courses.Count));
 
             return sb.ToString().Trim('\r', '\n');
         }
@@ -74,7 +75,7 @@ namespace GradeBook.Models
             }
             else
             {
-                throw new NotFoundException($"Student {name} not found");
+                throw new NotFoundException(Messages.StudentNotFoundMsg);
             }
         }
 
@@ -108,12 +109,12 @@ namespace GradeBook.Models
                     };
                 }).OrderBy(c => c.Semester);
 
-                sb.AppendLine($"Grades for student {name}:");
+                sb.AppendLine(string.Format(Messages.GradesForMsg, name));
 
                 foreach (var entry in result)
                 {
                     sb.AppendLine(
-                        $"Semester: {entry.Semester}, Course: {entry.Name}, Teacher: {entry.TeacherName}, Grade: {entry.Grade}");
+                        string.Format(Messages.GradesLineMsg,entry.Semester, entry.Name, entry.TeacherName, entry.Grade));
                 }
             }
 
@@ -140,17 +141,15 @@ namespace GradeBook.Models
                     AvgGrade = value.Average(c => c.Grade)
                 }).OrderBy(s => s.Semester);
             var sb = new StringBuilder();
-            sb.AppendLine($"Student: {student.FullName}");
-            sb.AppendLine($"Total courses: {courseCount}");
-            sb.AppendLine("Semester average grades and total study hours:");
+            sb.AppendLine(string.Format(Messages.SemesterStatsMsg, student.FullName, courseCount));
             var counter = 1;
             foreach (var entry in result)
             {
-                sb.AppendLine($"\t{counter}. Semester {entry.Semester}, {entry.TotalHours}: {entry.AvgGrade:F2}");
+                sb.AppendLine(string.Format(Messages.SemesterStatsLineMs,counter, entry.Semester, entry.TotalHours, entry.AvgGrade));
                 counter++;
             }
 
-            sb.AppendLine($"Total average grade: {student.GetAverageGrade():F2}");
+            sb.AppendLine(string.Format(Messages.TotalAverageGradeMsg, student.GetAverageGrade()));
 
             return sb.ToString();
         }
@@ -163,7 +162,7 @@ namespace GradeBook.Models
         public string GetCommandHelp()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{this.Name} - available commands:\n" + new string('-', 20));
+            sb.AppendLine(string.Format(Messages.AvailableCommands, this.Name) + new string('-', 20));
 
             foreach (var commandInfo in this.CommandInfos)
             {
