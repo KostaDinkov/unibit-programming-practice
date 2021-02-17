@@ -125,10 +125,13 @@ namespace GradeBook.Models
             {
                 if (e is CommandFormatException)
                 {
-                    var message = this.commandInfos.FirstOrDefault(ci => ci.Name == e.Message)?.Format;
+                    var command = e.Message.Split("\n")[1];
+                    var message = this.commandInfos.FirstOrDefault(ci => ci.Name == command)?.Format;
+
                     if (!string.IsNullOrWhiteSpace(message))
                     {
-                        this.Log(message);
+                        this.Log(Messages.CommandFormatErrorMsg + "\n" + message);
+                        return;
                     }
                     
                 }
