@@ -38,11 +38,14 @@
   },
   {
     "Name": "add-grades-bulk",
-    "Format":
-      "add-grades-bulk: {studentName}\n{semester}, {courseName}, {lecturesHours}, {exercisesHours}, {teacherName}, {grade}",
-    "Description":
-      "This command adds grades to a student for multiple courses. If the student or a course does not exist, one will be created.",
-    "Example":
-      "add-grades-bulk: Ivan Petrov\n1, OP, 25, 30, prof. I.Ivanov, 6; 1, LAAG, 25, 30, prof. G.Panayotova, 4; 1, DM, 25, 30, prof. R.Pavlov, 3; 2, OOP, 25, 30, prof. I.Ivanov, 4; 3, KMK, 25, 30, V.Ivanov, 5"
+    "Format": "add-grades-bulk: {studentName}\n{semester}, {courseName}, {lecturesHours}, {exercisesHours}, {teacherName}, {grade}",
+    "Description": "This command adds grades to a student for multiple courses. If the student or a course does not exist, one will be created.",
+    "Example": "add-grades-bulk: Ivan Petrov\n1, OP, 25, 30, prof. I.Ivanov, 6; 1, LAAG, 25, 30, prof. G.Panayotova, 4; 1, DM, 25, 30, prof. R.Pavlov, 3; 2, OOP, 25, 30, prof. I.Ivanov, 4; 3, KMK, 25, 30, V.Ivanov, 5"
+  },
+  {
+    "Name": "exit",
+    "Format": "exit",
+    "Description": "Exits the program",
+    "Example": "exit"
   }
 ]
