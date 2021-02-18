@@ -1,10 +1,10 @@
-﻿namespace Restaurant.Models
+﻿namespace Restaurant.Models.Products
 {
     public class Drink : Product
     {
         private const double CalorieMultiplier = 1.5;
 
-        public Drink(double volume)
+        public Drink()
         {
             this.SizeUnit = SizeUnit.Milliliters;
         }

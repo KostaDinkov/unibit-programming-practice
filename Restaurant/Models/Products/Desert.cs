@@ -1,11 +1,11 @@
-﻿namespace Restaurant.Models
+﻿namespace Restaurant.Models.Products
 {
     internal class Desert : Product
     {
         private const double CalorieMultiplier = 3;
       
 
-        public Desert(double weight)
+        public Desert()
         {
             this.SizeUnit = SizeUnit.Grams;
            

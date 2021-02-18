@@ -1,8 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using Restaurant.Common;
+using Restaurant.Exceptions;
 
-namespace Restaurant.Models
+namespace Restaurant.Models.Products
 {
-    public class Product
+    public abstract class Product
     {
         private int size;
         private string name;
@@ -14,9 +16,9 @@ namespace Restaurant.Models
             get => this.name;
             set
             {
-                if (!Regex.IsMatch(value, @"[a-zA-Z]*"))
+                if (!Regex.IsMatch(value, @"^[а-яА-Я ]*$"))
                 {
-                    throw new ValueOutOfRangeException();
+                    throw new ValueOutOfRangeException(Messages.WrongValueMsg + $" ({value})");
                 }
 
                 this.name = value;
@@ -31,7 +33,7 @@ namespace Restaurant.Models
             {
                 if (value < 0 || value > 100)
                 {
-                    throw new ValueOutOfRangeException();
+                    throw new ValueOutOfRangeException(Messages.WrongValueMsg + $" ({value})");
                 }
 
                 this.price = value;
@@ -45,11 +47,13 @@ namespace Restaurant.Models
             {
                 if (value < 0 || value > 1000)
                 {
-                    throw new ValueOutOfRangeException();
+                    throw new ValueOutOfRangeException(Messages.WrongValueMsg + $" ({value})");
                 }
 
                 this.size = value;
             }
         }
+
+        
     }
 }

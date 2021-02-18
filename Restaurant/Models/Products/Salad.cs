@@ -1,5 +1,5 @@
 ﻿
-namespace Restaurant.Models
+namespace Restaurant.Models.Products
 {
     class Salad:Product
     {

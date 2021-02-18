@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Models
+﻿namespace Restaurant.Models.Products
 {
     internal class Soup : Product
     {

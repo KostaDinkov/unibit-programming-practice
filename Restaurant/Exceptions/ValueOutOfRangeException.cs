@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace Restaurant.Models
+namespace Restaurant.Exceptions
 {
     public class ValueOutOfRangeException : Exception
     {
-
+        public ValueOutOfRangeException(string message): base(message)
+        {
+            
+        }
     }
 }

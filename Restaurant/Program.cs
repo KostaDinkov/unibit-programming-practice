@@ -1,4 +1,5 @@
 ﻿using System;
+using Restaurant.Models;
 
 namespace Restaurant
 {
@@ -6,7 +7,9 @@ namespace Restaurant
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            RestrauntManager manager = new RestrauntManager();
+            ITerminal terminal = new ConsoleTerminal(manager);
+            terminal.Start();
         }
     }
 }
